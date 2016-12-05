@@ -1,0 +1,17 @@
+build
+*.log
+/work
+va.hsp
+*.sonarj
+*.sw*
+.DS_Store
+.settings
+.gradle
+.gradletasknamecache
+
+# IDEA artifacts and output dirs
+*.iml
+*.ipr
+*.iws
+*.lck
+.idea
