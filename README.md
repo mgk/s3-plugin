@@ -1,4 +1,7 @@
 # S3 Gradle Plugin
+[![Build Status](https://img.shields.io/travis/mgk/s3-plugin.svg)](https://travis-ci.org/mgk/s3-plugin)
+[![MIT License](http://img.shields.io/badge/license-MIT-blue.svg?style=flat)](LICENSE)
+![Flux Cap](https://img.shields.io/badge/flux%20capacitor-1.21%20GW-orange.svg)
 
 Gradle plugin that uploads and downloads S3 objects.
 
@@ -44,6 +47,13 @@ For a recursive download:
   + `keyPrefix` - S3 prefix of objects to download
   + `destDir` - local directory to download objects to
 
-## Misc
+## Progress Reporting
 
 Downloads report percentage progress at the gradle INFO level. Run gradle with the `-i` option to see download progress.
+
+## Versioning
+
+This project uses [semantic versioning](http://semver.org)
+
+## License
+[![MIT License](http://img.shields.io/badge/license-MIT-blue.svg?style=flat)](LICENSE)
