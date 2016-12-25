@@ -1,10 +1,42 @@
 # S3 Gradle Plugin
+[![Build Status](https://img.shields.io/travis/mgk/s3-plugin.svg)](https://travis-ci.org/mgk/s3-plugin)
+[![MIT License](http://img.shields.io/badge/license-MIT-blue.svg?style=flat)](LICENSE)
+![Flux Cap](https://img.shields.io/badge/flux%20capacitor-1.21%20GW-orange.svg)
 
 Gradle plugin that uploads and downloads S3 objects.
 
 ## Setup
 
-See [gradle plugin](https://plugins.gradle.org/plugin/com.github.mgk.gradle.s3)
+New way:
+
+```groovy
+plugins {
+  id "com.github.mgk.gradle.s3" version "1.1.0"
+}
+```
+
+Old way:
+
+```groovy
+buildscript {
+  repositories {
+    maven {
+      url "https://plugins.gradle.org/m2/"
+    }
+  }
+  dependencies {
+    classpath "gradle.plugin.com.github.mgk.gradle:s3:1.1.0"
+  }
+}
+
+apply plugin: "com.github.mgk.gradle.s3"
+```
+
+## Versioning
+
+This project uses [semantic versioning](http://semver.org)
+
+See [gradle plugin page](https://plugins.gradle.org/plugin/com.github.mgk.gradle.s3) for other versions.
 
 # Usage
 
@@ -23,7 +55,7 @@ Upload a file to S3. Properties:
   + `bucket` - S3 bucket to use *(optional, defaults to the project `s3` configured bucket)*
   + `file` - path of file to be uploaded
   + `key` - key of S3 object to create.
-  + `overwrite` - (*optional, default is `false`), if `true` the S3 object is created or overwritten if it already exists.
+  + `overwrite` - *(optional, default is `false`)*, if `true` the S3 object is created or overwritten if it already exists.
 
 By default `S3Upload` does not overwrite the S3 object if it already exists. Set `overwrite` to `true` to upload the file even if it exists.
 
@@ -44,6 +76,10 @@ For a recursive download:
   + `keyPrefix` - S3 prefix of objects to download
   + `destDir` - local directory to download objects to
 
-## Misc
+## Progress Reporting
 
 Downloads report percentage progress at the gradle INFO level. Run gradle with the `-i` option to see download progress.
+
+
+## License
+[![MIT License](http://img.shields.io/badge/license-MIT-blue.svg?style=flat)](LICENSE)
