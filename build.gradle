@@ -1,7 +1,6 @@
 apply plugin: 'groovy'
 apply plugin: 'maven'
 
-// First, apply the publishing plugin
 buildscript {
   repositories {
     maven {
@@ -23,6 +22,15 @@ dependencies {
 
 repositories {
     jcenter()
+}
+
+if (System.env.TRAVIS == 'true') {
+    def branch = System.env.TRAVIS_BRANCH.replace('/', '-')
+    def isPullRequestBuild = System.env.TRAVIS_PULL_REQUEST != 'false'
+
+    if (branch != 'master' || isPullRequestBuild) {
+        version += "-${branch}-${System.env.TRAVIS_BUILD_NUMBER}"
+    }
 }
 
 task wrapper(type: Wrapper) {
