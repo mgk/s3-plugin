@@ -1,5 +1,5 @@
 // buildscript for testing against local version
-// of s3-plugin. See project README for using s3-plugin
+// of s3-plugin. See project root README for using s3-plugin
 // in your projects.
 buildscript {
     repositories {
@@ -16,14 +16,21 @@ apply plugin: 'com.github.mgk.gradle.s3'
 
 import com.github.mgk.gradle.*
 
-s3.bucket = 'mgk-s3-plugin-test-bucket'
+s3 {
+  bucket = "${System.env.BUCKET}"
+}
 
-task s3Download(type: S3Download) {
+task download(type: S3Download) {
     key = 'hello.txt'
     file = "${buildDir}/hello.txt"
 }
 
-task s3Upload(type: S3Upload, dependsOn: s3Download) {
+task upload(type: S3Upload, dependsOn: download) {
     file = "${buildDir}/hello.txt"
     key = 'hello-copy.txt'
+}
+
+task downloadTree(type: S3Download) {
+	keyPrefix = ''
+	destDir = "${buildDir}/download-tree"
 }
