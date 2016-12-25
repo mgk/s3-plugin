@@ -32,7 +32,7 @@ task wrapper(type: Wrapper) {
 uploadArchives {
     repositories {
         mavenDeployer {
-            repository(url: uri('../repo'))
+            repository(url: uri('build/repo'))
         }
     }
 }

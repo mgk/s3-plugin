@@ -1,0 +1,36 @@
+// buildscript for testing against local version
+// of s3-plugin. See project root README for using s3-plugin
+// in your projects.
+buildscript {
+    repositories {
+		maven { url uri('../build/repo') }
+        jcenter()
+    }
+    dependencies {
+        classpath group: 'com.github.mgk.gradle', name: 's3', version: '1.1.0'
+    }
+}
+
+apply plugin: 'groovy'
+apply plugin: 'com.github.mgk.gradle.s3'
+
+import com.github.mgk.gradle.*
+
+s3 {
+  bucket = "${System.env.BUCKET}"
+}
+
+task download(type: S3Download) {
+    key = 'hello.txt'
+    file = "${buildDir}/hello.txt"
+}
+
+task upload(type: S3Upload, dependsOn: download) {
+    file = "${buildDir}/hello.txt"
+    key = 'hello-copy.txt'
+}
+
+task downloadTree(type: S3Download) {
+	keyPrefix = ''
+	destDir = "${buildDir}/download-tree"
+}
