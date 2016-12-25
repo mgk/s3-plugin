@@ -20,10 +20,10 @@ The following Gradle tasks are provided.
 
 Upload a file to S3. Properties:
 
-    + `bucket` - S3 bucket to use *(optional, defaults to the project `s3` configured bucket)*
-    + `file` - path of file to be uploaded
-    + `key` - key of S3 object to create.
-    + `overwrite` - (*optional, default is `false`), if `true` the S3 object is created or overwritten if it already exists.
+  + `bucket` - S3 bucket to use *(optional, defaults to the project `s3` configured bucket)*
+  + `file` - path of file to be uploaded
+  + `key` - key of S3 object to create.
+  + `overwrite` - (*optional, default is `false`), if `true` the S3 object is created or overwritten if it already exists.
 
 By default `S3Upload` does not overwrite the S3 object if it already exists. Set `overwrite` to `true` to upload the file even if it exists.
 
@@ -32,17 +32,17 @@ By default `S3Upload` does not overwrite the S3 object if it already exists. Set
 Downloads one or more S3 objects. This task has two modes of operation: single file
 download and recursive download. Properties that apply to both modes:
 
-    + `bucket` - S3 bucket to use *(optional, defaults to the project `s3` configured bucket)*
+  + `bucket` - S3 bucket to use *(optional, defaults to the project `s3` configured bucket)*
 
 For a single file download:
 
-    + `key` - key of S3 object to download
-    + `file` - local path of file to save the download to
+  + `key` - key of S3 object to download
+  + `file` - local path of file to save the download to
 
 For a recursive download:
 
-    + `keyPrefix` - S3 prefix of objects to download
-    + `destDir` - local directory to download objects to
+  + `keyPrefix` - S3 prefix of objects to download
+  + `destDir` - local directory to download objects to
 
 ## Misc
 
