@@ -11,7 +11,7 @@ New way:
 
 ```groovy
 plugins {
-  id "com.github.mgk.gradle.s3" version "1.1.0"
+  id "com.github.mgk.gradle.s3" version "1.3.0"
 }
 ```
 
@@ -25,7 +25,7 @@ buildscript {
     }
   }
   dependencies {
-    classpath "gradle.plugin.com.github.mgk.gradle:s3:1.1.0"
+    classpath "gradle.plugin.com.github.mgk.gradle:s3:1.3.0"
   }
 }
 
