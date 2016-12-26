@@ -46,7 +46,9 @@ The S3 plugin uses the [default credentials provider](http://docs.aws.amazon.com
 
 ## Tasks
 
-The following Gradle tasks are provided.
+The following Gradle tasks are provided. See [the tests](example/build.gradle) for
+examples.
+
 
 ### S3Upload
 
@@ -76,10 +78,59 @@ For a recursive download:
   + `keyPrefix` - S3 prefix of objects to download
   + `destDir` - local directory to download objects to
 
+***Nota Bene***: recursive downloads create a sparse directory tree
+containing the full `keyPrefix` under `destDir`. So with an S3 bucket
+containing the object keys:
+
+```
+top/foo/bar
+top/README
+```
+
+a recursive download:
+
+```groovy
+task downloadRecursive(type: S3Download) {
+  keyPrefix = "top/foo/"
+  destDir = "local-dir"
+}
+```
+
+results in this local tree:
+
+```
+local-dir/
+└── foo
+    └── bar
+```
+
+So only files under `top/foo` are downloaded, but their full S3 paths are
+appended to the `destDir`. This is different than the behavior of the aws cli
+`aws s3 cp --recursive` command which prunes the root of the downloaded objects.
+I'll probably make this pruning the default in a future release, with an option
+to keep the current behavior.
+
 ## Progress Reporting
 
 Downloads report percentage progress at the gradle INFO level. Run gradle with the `-i` option to see download progress.
 
+## Development Notes
+
+The `uploadArchives` task deploys to a local file maven repo under the build
+directory. It also writes the current build to `build/VERSION`. The file
+`example/build.gradle` serves as tests and doc. The tests use the local build
+of the plugin.
+
+The tests use a generated unique path in a test bucket to exercise all
+of the plugins features.
+
+The test bucket has a [AWS Object Expiration](https://aws.amazon.com/blogs/aws/amazon-s3-object-expiration/) policy that removes objects older
+than one day automatically, so yay, no cleanup required.
+
+The automated build uses an IAM access key that allows `listBucket`, `getObject`,
+and `putObject` on the test bucket only. The AWS credits configured as Travis
+environment variables. The access key id is not a secret so it is shown in the
+logs, while the secret access key is secret and not shown.
 
 ## License
 [![MIT License](http://img.shields.io/badge/license-MIT-blue.svg?style=flat)](LICENSE)

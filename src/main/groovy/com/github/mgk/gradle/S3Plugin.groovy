@@ -54,7 +54,17 @@ class S3Upload extends S3Task {
 
     @TaskAction
     def task() {
-        if (overwrite || !s3Client.doesObjectExist(bucket, key)) {
+        if (s3Client.doesObjectExist(bucket, key)) {
+            if (overwrite) {
+                logger.quiet("S3 Upload ${file} → s3://${bucket}/${key} with overwrite")
+                s3Client.putObject(bucket, key, new File(file))
+            }
+            else {
+                logger.quiet("s3://${bucket}/${key} exists, not overwriting")
+            }
+        }
+        else {
+            logger.quiet("S3 Upload ${file} → s3://${bucket}/${key}")
             s3Client.putObject(bucket, key, new File(file))
         }
     }
@@ -73,11 +83,13 @@ class S3Download extends S3Task {
         Transfer transfer
 
         if (keyPrefix != null) {
+            logger.quiet("S3 Download recursive s3://${bucket}/${keyPrefix} → ${destDir}/")
             File dir = new File(destDir)
             dir.mkdirs()
             transfer = tm.downloadDirectory(bucket, keyPrefix, dir)
         }
         else {
+            logger.quiet("S3 Download s3://${bucket}/${key} → ${file}")
             File f = new File(file)
             f.parentFile.mkdirs()
             transfer = tm.download(bucket, key, f)

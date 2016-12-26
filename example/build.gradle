@@ -7,7 +7,9 @@ buildscript {
         jcenter()
     }
     dependencies {
-        classpath group: 'com.github.mgk.gradle', name: 's3', version: '1.1.0'
+        classpath group: 'com.github.mgk.gradle',
+                  name: 's3',
+                  version: file("../build/VERSION").text
     }
 }
 
@@ -20,17 +22,70 @@ s3 {
   bucket = "${System.env.BUCKET}"
 }
 
-task download(type: S3Download) {
-    key = 'hello.txt'
-    file = "${buildDir}/hello.txt"
+def root = System.env.TRAVIS == 'true' ?
+    "${System.env.TRAVIS_BRANCH}/${System.env.TRAVIS_BUILD_NUMBER}" :
+    "${new Date().toInstant()}"
+
+// upload a new file
+task uploadNew(type: S3Upload) {
+    def f = new File("${buildDir}/hello.txt")
+    doFirst {
+        f.parentFile.mkdirs()
+        f.text = 'hello'
+    }
+    file = f
+    key = "${root}/hello.txt"
 }
 
-task upload(type: S3Upload, dependsOn: download) {
-    file = "${buildDir}/hello.txt"
-    key = 'hello-copy.txt'
+// attempt to upload a file that already exists on
+// S3 without overwrite -> no action is taken
+task uploadExisting(type: S3Upload, dependsOn: uploadNew) {
+    file = new File("${buildDir}/hello.txt")
+    key = "${root}/hello.txt"
 }
 
-task downloadTree(type: S3Download) {
-	keyPrefix = ''
+// overwrite existing S3 object
+task uploadExistingWithOverwrite(type: S3Upload, dependsOn: uploadExisting) {
+    file = new File("${buildDir}/hello.txt")
+    key = "${root}/hello.txt"
+    overwrite = true
+}
+
+def testFiles = ['a/b1', 'a/b2', 'a/b/c1', 'a/b/c2']
+
+task createTestFiles {
+    doLast {
+        File dir = file("${buildDir}/tree")
+        testFiles.each { name ->
+            def f = file("${buildDir}/tree/${name}")
+            f.parentFile.mkdirs()
+            f.text = name
+        }
+    }
+}
+
+task uploadTestFiles(dependsOn: createTestFiles) {
+    doLast {
+        def dir = file("${buildDir}/tree")
+        fileTree(dir: dir).each { f ->
+            def path = dir.toPath().relativize(f.toPath())
+            def t = task "upload-${path}"(type: S3Upload) {
+                file = f
+                key = "${root}/tree/${path}"
+            }
+            t.execute()
+        }
+    }
+}
+
+task downloadRecursive(type: S3Download, dependsOn: uploadTestFiles) {
+	keyPrefix = "${root}/tree"
 	destDir = "${buildDir}/download-tree"
 }
+
+task checkDownload(type: Exec, dependsOn: downloadRecursive) {
+    workingDir buildDir
+    commandLine 'diff', 'tree', "download-tree/${root}/tree"
+}
+
+check.dependsOn(uploadExistingWithOverwrite, checkDownload)
