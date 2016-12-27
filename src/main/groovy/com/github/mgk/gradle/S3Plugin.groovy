@@ -16,6 +16,8 @@ import org.gradle.api.DefaultTask
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.TaskAction
 import java.text.DecimalFormat
+import java.nio.file.Path
+import java.nio.file.Files
 
 
 class S3Extension {
@@ -76,18 +78,28 @@ class S3Download extends S3Task {
     String file
     String keyPrefix
     String destDir
+    boolean pruneTree = true
 
     @TaskAction
     def task() {
         TransferManager tm = new TransferManager()
         Transfer transfer
+        Path temp
 
+        logger.info("S3Download(key=${key}" +
+                    ", file=${file}" +
+                    ", keyPrefix=${keyPrefix}" +
+                    ", destDir=${destDir}" +
+                    ", pruneTree=${pruneTree}")
+
+        // directory download
         if (keyPrefix != null) {
-            logger.quiet("S3 Download recursive s3://${bucket}/${keyPrefix} → ${destDir}/")
-            File dir = new File(destDir)
-            dir.mkdirs()
-            transfer = tm.downloadDirectory(bucket, keyPrefix, dir)
+            temp = Files.createTempDirectory(project.buildDir.toPath(), 's3download-')
+            logger.quiet("S3 Download recursive s3://${bucket}/${keyPrefix} → ${temp}/")
+            transfer = tm.downloadDirectory(bucket, keyPrefix, temp.toFile())
         }
+
+        // single file download
         else {
             logger.quiet("S3 Download s3://${bucket}/${key} → ${file}")
             File f = new File(file)
@@ -99,6 +111,23 @@ class S3Download extends S3Task {
         listener.transfer = transfer
         transfer.addProgressListener(listener)
         transfer.waitForCompletion()
+
+        // For recursvie downloads move temp dir to final location
+        // after the transfer completes
+        if (keyPrefix != null) {
+            Path src
+            if (pruneTree) {
+                def prefix = keyPrefix.replaceFirst("/*\$", "")
+                src = new File(temp.toFile(), prefix).toPath()
+            }
+            else {
+                src = temp
+            }
+            logger.quiet("mv ${src} ${destDir}")
+            File dest = new File(destDir)
+            dest.parentFile.mkdirs()
+            Files.move(src, dest.toPath())
+        }
     }
 
     class S3Listener implements ProgressListener {

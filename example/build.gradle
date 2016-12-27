@@ -3,7 +3,7 @@
 // in your projects.
 buildscript {
     repositories {
-		maven { url uri('../build/repo') }
+        maven { url uri('../build/repo') }
         jcenter()
     }
     dependencies {
@@ -79,13 +79,28 @@ task uploadTestFiles(dependsOn: createTestFiles) {
 }
 
 task downloadRecursive(type: S3Download, dependsOn: uploadTestFiles) {
-	keyPrefix = "${root}/tree"
-	destDir = "${buildDir}/download-tree"
+    keyPrefix = "${root}/tree"
+    destDir = "${buildDir}/download-tree"
 }
 
 task checkDownload(type: Exec, dependsOn: downloadRecursive) {
     workingDir buildDir
-    commandLine 'diff', 'tree', "download-tree/${root}/tree"
+    commandLine 'diff', 'tree', 'download-tree'
 }
 
-check.dependsOn(uploadExistingWithOverwrite, checkDownload)
+task downloadRecursiveNoPrune(type: S3Download, dependsOn: uploadTestFiles) {
+    keyPrefix = "${root}/tree"
+    destDir = "${buildDir}/download-tree-no-prune"
+    pruneTree = false
+}
+
+task checkDownloadNoPrune(type: Exec, dependsOn: downloadRecursiveNoPrune) {
+    workingDir buildDir
+    commandLine 'diff', 'tree', "download-tree-no-prune/${root}/tree"
+}
+
+check.dependsOn(
+    uploadExistingWithOverwrite,
+    checkDownload,
+    checkDownloadNoPrune
+)

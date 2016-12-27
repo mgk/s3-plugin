@@ -77,38 +77,11 @@ For a recursive download:
 
   + `keyPrefix` - S3 prefix of objects to download
   + `destDir` - local directory to download objects to
-
-***Nota Bene***: recursive downloads create a sparse directory tree
-containing the full `keyPrefix` under `destDir`. So with an S3 bucket
-containing the object keys:
-
-```
-top/foo/bar
-top/README
-```
-
-a recursive download:
-
-```groovy
-task downloadRecursive(type: S3Download) {
-  keyPrefix = "top/foo/"
-  destDir = "local-dir"
-}
-```
-
-results in this local tree:
-
-```
-local-dir/
-└── foo
-    └── bar
-```
-
-So only files under `top/foo` are downloaded, but their full S3 paths are
-appended to the `destDir`. This is different than the behavior of the aws cli
-`aws s3 cp --recursive` command which prunes the root of the downloaded objects.
-I'll probably make this pruning the default in a future release, with an option
-to keep the current behavior.
+  + `pruneTree` - *(optional, defaukt is `true`)*, if `true` the download tree
+    is pruned which mimics the behavior of the aws cli and the downloaded tree
+    is placed under `destDir/`. If `false` the downloaded tree is
+    under `destDir/keyPrefix/`. [the tests](example/build.gradle) for
+    examples.
 
 ## Progress Reporting
 
