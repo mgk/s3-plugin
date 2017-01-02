@@ -12,7 +12,7 @@ New way:
 
 ```groovy
 plugins {
-  id "com.github.mgk.gradle.s3" version "1.4.0"
+    id "com.github.mgk.gradle.s3" version "1.5.0"
 }
 ```
 
@@ -20,14 +20,14 @@ Old way:
 
 ```groovy
 buildscript {
-  repositories {
-    maven {
-      url "https://plugins.gradle.org/m2/"
+    repositories {
+        maven {
+            url "https://plugins.gradle.org/m2/"
+        }
     }
-  }
-  dependencies {
-    classpath "gradle.plugin.com.github.mgk.gradle:s3:1.4.0"
-  }
+    dependencies {
+        classpath "gradle.plugin.com.github.mgk.gradle:s3:1.5.0"
+    }
 }
 
 apply plugin: "com.github.mgk.gradle.s3"

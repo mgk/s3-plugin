@@ -100,7 +100,6 @@ class S3Download extends S3Task {
     def task() {
         TransferManager tm = new TransferManager()
         Transfer transfer
-        Path temp
 
         // directory download
         if (keyPrefix != null) {
