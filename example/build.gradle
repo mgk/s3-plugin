@@ -83,24 +83,22 @@ task downloadRecursive(type: S3Download, dependsOn: uploadTestFiles) {
     destDir = "${buildDir}/download-tree"
 }
 
-task checkDownload(type: Exec, dependsOn: downloadRecursive) {
+task checkDownloadRecursive(type: Exec, dependsOn: downloadRecursive) {
     workingDir buildDir
-    commandLine 'diff', 'tree', 'download-tree'
-}
-
-task downloadRecursiveNoPrune(type: S3Download, dependsOn: uploadTestFiles) {
-    keyPrefix = "${root}/tree"
-    destDir = "${buildDir}/download-tree-no-prune"
-    pruneTree = false
-}
-
-task checkDownloadNoPrune(type: Exec, dependsOn: downloadRecursiveNoPrune) {
-    workingDir buildDir
-    commandLine 'diff', 'tree', "download-tree-no-prune/${root}/tree"
+    commandLine 'diff', '-q', '-r', 'tree', "download-tree/${root}/tree"
 }
 
 check.dependsOn(
     uploadExistingWithOverwrite,
-    checkDownload,
-    checkDownloadNoPrune
+    checkDownloadRecursive,
 )
+
+// To prune or re-root a downloaded tree removing the keyPrefix
+// use a Gradle Copy task. This can be used to mostly mimic the AWS CLI:
+//
+//   aws s3 cp --recursive <bucket-path> <local-path>
+//
+task copyDownload(type: Copy, dependsOn: downloadRecursive) {
+    from "${buildDir}/download-tree/${root}/tree"
+    into "${buildDir}/pruned-copy"
+}
