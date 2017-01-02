@@ -1,5 +1,6 @@
 # S3 Gradle Plugin
 [![Build Status](https://img.shields.io/travis/mgk/s3-plugin.svg)](https://travis-ci.org/mgk/s3-plugin)
+[![Install](https://img.shields.io/badge/install-plugin-brown.svg)](https://plugins.gradle.org/plugin/com.github.mgk.gradle.s3)
 [![MIT License](http://img.shields.io/badge/license-MIT-blue.svg?style=flat)](LICENSE)
 ![Flux Cap](https://img.shields.io/badge/flux%20capacitor-1.21%20GW-orange.svg)
 
