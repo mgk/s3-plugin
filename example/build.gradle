@@ -20,6 +20,7 @@ import com.github.mgk.gradle.*
 
 s3 {
   bucket = "${System.env.BUCKET}"
+  // profile = 'travis-s3-plugin'
 }
 
 def root = System.env.TRAVIS == 'true' ?
