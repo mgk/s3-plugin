@@ -34,9 +34,14 @@ abstract class S3Task extends DefaultTask {
     @Input
     String bucket
 
+    static AmazonS3Client s3Client
+
     String getBucket() { bucket ?: project.s3.bucket }
 
     def getS3Client() {
+        if (s3Client) {
+            return s3Client
+        }
         def profileCreds
         if (project.s3.profile) {
             logger.quiet("Using AWS credentials profile: ${project.s3.profile}")
@@ -66,7 +71,7 @@ abstract class S3Task extends DefaultTask {
                     .build()
         }
 
-        AmazonS3Client s3Client = new AmazonS3Client(creds)
+        s3Client = new AmazonS3Client(creds)
         String region = project.s3.region
         if (region) {
             s3Client.region = Region.getRegion(Regions.fromName(region))
