@@ -20,6 +20,7 @@ import com.github.mgk.gradle.*
 
 s3 {
   bucket = "${System.env.BUCKET}"
+  // role = "arn:aws:iam::000000000000:role/system/my-role"
   // profile = 'travis-s3-plugin'
 }
 

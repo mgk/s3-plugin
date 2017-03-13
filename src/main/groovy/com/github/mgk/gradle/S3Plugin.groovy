@@ -3,6 +3,7 @@ package com.github.mgk.gradle
 import com.amazonaws.auth.AWSCredentialsProviderChain
 import com.amazonaws.auth.EC2ContainerCredentialsProviderWrapper
 import com.amazonaws.auth.EnvironmentVariableCredentialsProvider
+import com.amazonaws.auth.STSAssumeRoleSessionCredentialsProvider
 import com.amazonaws.auth.SystemPropertiesCredentialsProvider
 import com.amazonaws.auth.profile.ProfileCredentialsProvider
 import com.amazonaws.regions.Region
@@ -12,18 +13,18 @@ import com.amazonaws.event.ProgressListener
 import com.amazonaws.event.ProgressEvent
 import com.amazonaws.services.s3.transfer.Transfer
 import com.amazonaws.services.s3.transfer.TransferManager
-
+import com.amazonaws.services.securitytoken.AWSSecurityTokenServiceClientBuilder
 import org.gradle.api.Project
 import org.gradle.api.Plugin
 import org.gradle.api.DefaultTask
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.TaskAction
 import java.text.DecimalFormat
-import java.nio.file.Path
 
 
 class S3Extension {
     String profile
+    String role
     String region
     String bucket
 }
@@ -50,6 +51,20 @@ abstract class S3Task extends DefaultTask {
                 profileCreds,
                 new EC2ContainerCredentialsProviderWrapper()
         )
+
+        if (project.s3.role) {
+            logger.quiet("Assuming role: ${project.s3.role}")
+            creds = new STSAssumeRoleSessionCredentialsProvider.Builder(
+                    project.s3.role,
+                    "s3task")
+                    .withStsClient(
+                        AWSSecurityTokenServiceClientBuilder
+                                .standard()
+                                .withCredentials(creds)
+                                .build()
+                        )
+                    .build()
+        }
 
         AmazonS3Client s3Client = new AmazonS3Client(creds)
         String region = project.s3.region
@@ -98,7 +113,7 @@ class S3Download extends S3Task {
 
     @TaskAction
     def task() {
-        TransferManager tm = new TransferManager()
+        TransferManager tm = new TransferManager(s3Client)
         Transfer transfer
 
         // directory download
