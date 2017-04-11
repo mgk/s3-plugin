@@ -51,6 +51,14 @@ s3 {
 }
 ```
 
+You can also specify a role to assume by setting the project `s3.role` property, e.g.:
+
+```groovy
+s3 {
+    role = 'arn:aws:iam::000000000000:role/system/my-role'
+}
+```
+
 Setting the environment variables `AWS_ACCESS_KEY_ID` and `AWS_SECRET_ACCESS_KEY` is one way to provide your S3 credentials. See the [AWS Docs](http://docs.aws.amazon.com/cli/latest/userguide/cli-chap-getting-started.html) for details on credentials.
 
 ## Tasks
