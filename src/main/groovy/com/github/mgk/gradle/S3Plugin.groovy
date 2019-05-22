@@ -98,7 +98,7 @@ class S3Download extends S3Task {
 
     @TaskAction
     def task() {
-        TransferManager tm = new TransferManager()
+        TransferManager tm = new TransferManager(getS3Client())
         Transfer transfer
         Path temp
 
