@@ -17,6 +17,8 @@ import org.gradle.api.Project
 import org.gradle.api.Plugin
 import org.gradle.api.DefaultTask
 import org.gradle.api.tasks.Input
+import org.gradle.api.tasks.Internal
+import org.gradle.api.tasks.Optional
 import org.gradle.api.tasks.TaskAction
 import java.text.DecimalFormat
 import java.nio.file.Path
@@ -35,6 +37,7 @@ abstract class S3Task extends DefaultTask {
 
     String getBucket() { bucket ?: project.s3.bucket }
 
+    @Internal
     def getS3Client() {
         def profileCreds
         if (project.s3.profile) {
@@ -91,9 +94,18 @@ class S3Upload extends S3Task {
 
 
 class S3Download extends S3Task {
+    @Input
     String key
+
+    @Input
     String file
+
+    @Optional
+    @Input
     String keyPrefix
+
+    @Optional
+    @Input
     String destDir
 
     @TaskAction
