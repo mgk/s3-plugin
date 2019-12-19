@@ -12,7 +12,7 @@ New way:
 
 ```groovy
 plugins {
-    id "com.github.mgk.gradle.s3" version "1.5.0"
+    id "com.github.mgk.gradle.s3" version "1.5.1"
 }
 ```
 
@@ -26,7 +26,7 @@ buildscript {
         }
     }
     dependencies {
-        classpath "gradle.plugin.com.github.mgk.gradle:s3:1.5.0"
+        classpath "gradle.plugin.com.github.mgk.gradle:s3:1.5.1"
     }
 }
 
