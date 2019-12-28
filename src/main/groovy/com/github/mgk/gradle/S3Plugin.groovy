@@ -12,7 +12,7 @@ import com.amazonaws.event.ProgressListener
 import com.amazonaws.event.ProgressEvent
 import com.amazonaws.services.s3.transfer.Transfer
 import com.amazonaws.services.s3.transfer.TransferManager
-
+import org.gradle.api.GradleException
 import org.gradle.api.Project
 import org.gradle.api.Plugin
 import org.gradle.api.DefaultTask
@@ -76,6 +76,12 @@ class S3Upload extends S3Task {
 
     @TaskAction
     def task() {
+
+        // validation
+        if (!bucket) {
+            throw new GradleException('Invalid parameters: [bucket] was not provided and/or a default was not set')
+        }
+
         if (s3Client.doesObjectExist(bucket, key)) {
             if (overwrite) {
                 logger.quiet("S3 Upload ${file} → s3://${bucket}/${key} with overwrite")
@@ -115,18 +121,34 @@ class S3Download extends S3Task {
         TransferManager tm = new TransferManager(getS3Client())
         Transfer transfer
 
+        // validate bucket
+        if (!bucket) {
+            throw new GradleException('Invalid parameters: [bucket] was not provided and/or a default was not set')
+        }
+
         // directory download
-        if (keyPrefix != null) {
+        if (keyPrefix && destDir) {
+            if (key || file) {
+                throw new GradleException('Invalid parameters: [key, file] are not valid for S3 Download recursive')
+            }
             logger.quiet("S3 Download recursive s3://${bucket}/${keyPrefix} → ${project.file(destDir)}/")
             transfer = tm.downloadDirectory(bucket, keyPrefix, project.file(destDir))
         }
 
         // single file download
-        else {
+        else if (key && file) {
+            if (keyPrefix || destDir) {
+                throw new GradleException('Invalid parameters: [keyPrefix, destDir] are not valid for S3 Download single file')
+            }
             logger.quiet("S3 Download s3://${bucket}/${key} → ${file}")
             File f = new File(file)
             f.parentFile.mkdirs()
             transfer = tm.download(bucket, key, f)
+        }
+
+        // invalid params
+        else {
+            throw new GradleException('Invalid parameters: one of [key, file] or [keyPrefix, destDir] pairs must be specified for S3 Download')
         }
 
         def listener = new S3Listener()
