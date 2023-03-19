@@ -72,7 +72,13 @@ class S3Upload extends S3Task {
     String file
 
     @Input
-    boolean overwrite = false
+    boolean getOverwrite() {
+        _overwrite
+    }
+    boolean setOverwrite(boolean value) {
+        _overwrite = value
+    }
+    private boolean _overwrite
 
     @TaskAction
     def task() {
