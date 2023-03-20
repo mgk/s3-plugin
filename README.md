@@ -121,13 +121,11 @@ Downloads report percentage progress at the gradle INFO level. Run gradle with t
 
 ## Development Notes
 
-The `uploadArchives` task deploys to a local file maven repo under the build
-directory. It also writes the current build to `build/VERSION`. The file
-`example/build.gradle` serves as tests and doc. The tests use the local build
-of the plugin.
+The example project pulls the build from Maven Local. Run `./gradlew publishToMavenLocal` to deploy the plugin to the Maven Local 
+repository. It also writes the current build to `build/VERSION`. The file `example/build.gradle` serves as tests and doc. The tests use 
+the local build of the plugin.
 
-The tests use a generated unique path in a test bucket to exercise all
-of the plugins features.
+The tests use a generated unique path in a test bucket to exercise all of the plugins features.
 
 The test bucket has a [AWS Object Expiration](https://aws.amazon.com/blogs/aws/amazon-s3-object-expiration/) policy that removes objects older
 than one day automatically, so yay, no cleanup required.
