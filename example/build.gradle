@@ -1,3 +1,6 @@
+import com.github.mgk.gradle.S3Upload
+import com.github.mgk.gradle.S3Download
+
 // buildscript for testing against local version
 // of s3-plugin. See project root README for using s3-plugin
 // in your projects.
