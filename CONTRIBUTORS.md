@@ -11,3 +11,7 @@
 * **[Peter Thomas](https://github.com/peter-thomas-mgd)**
 
   * report and fix warnings
+
+* **[Karl Schults](https://github.com/kschults)**
+
+  * gradle upgrade

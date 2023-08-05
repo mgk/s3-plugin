@@ -12,7 +12,7 @@ New way:
 
 ```groovy
 plugins {
-    id "com.github.mgk.gradle.s3" version "1.5.1"
+    id "com.github.mgk.gradle.s3" version "1.6.0"
 }
 ```
 
@@ -26,7 +26,7 @@ buildscript {
         }
     }
     dependencies {
-        classpath "gradle.plugin.com.github.mgk.gradle:s3:1.5.1"
+        classpath "gradle.plugin.com.github.mgk.gradle:s3:1.6.0"
     }
 }
 
@@ -121,8 +121,8 @@ Downloads report percentage progress at the gradle INFO level. Run gradle with t
 
 ## Development Notes
 
-The example project pulls the build from Maven Local. Run `./gradlew publishToMavenLocal` to deploy the plugin to the Maven Local 
-repository. It also writes the current build to `build/VERSION`. The file `example/build.gradle` serves as tests and doc. The tests use 
+The example project pulls the build from Maven Local. Run `./gradlew publishToMavenLocal` to deploy the plugin to the Maven Local
+repository. It also writes the current build to `build/VERSION`. The file `example/build.gradle` serves as tests and doc. The tests use
 the local build of the plugin.
 
 The tests use a generated unique path in a test bucket to exercise all of the plugins features.
