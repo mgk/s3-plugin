@@ -1,9 +1,12 @@
+import com.github.mgk.gradle.S3Upload
+import com.github.mgk.gradle.S3Download
+
 // buildscript for testing against local version
 // of s3-plugin. See project root README for using s3-plugin
 // in your projects.
 buildscript {
     repositories {
-        maven { url uri('../build/repo') }
+        mavenLocal()
         jcenter()
     }
     dependencies {
@@ -15,8 +18,6 @@ buildscript {
 
 apply plugin: 'groovy'
 apply plugin: 'com.github.mgk.gradle.s3'
-
-import com.github.mgk.gradle.*
 
 s3 {
   bucket = "${System.env.BUCKET}"
@@ -53,10 +54,10 @@ task uploadExistingWithOverwrite(type: S3Upload, dependsOn: uploadExisting) {
 }
 
 def testFiles = ['a/b1', 'a/b2', 'a/b/c1', 'a/b/c2']
+def dir = file("${buildDir}/tree")
 
 task createTestFiles {
     doLast {
-        File dir = file("${buildDir}/tree")
         testFiles.each { name ->
             def f = file("${buildDir}/tree/${name}")
             f.parentFile.mkdirs()
@@ -66,17 +67,15 @@ task createTestFiles {
 }
 
 task uploadTestFiles(dependsOn: createTestFiles) {
-    doLast {
-        def dir = file("${buildDir}/tree")
-        fileTree(dir: dir).each { f ->
-            def path = dir.toPath().relativize(f.toPath())
-            def t = task "upload-${path}"(type: S3Upload) {
-                file = f
-                key = "${root}/tree/${path}"
-            }
-            t.execute()
-        }
+}
+
+fileTree(dir: dir).each { f ->
+    def path = dir.toPath().relativize(f.toPath())
+    def t = task "upload${f.name}"(type: S3Upload) {
+        file = f
+        key = "${root}/tree/${path}"
     }
+    uploadTestFiles.finalizedBy(t)
 }
 
 task downloadRecursive(type: S3Download, dependsOn: uploadTestFiles) {

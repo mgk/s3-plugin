@@ -1,5 +1,5 @@
 apply plugin: 'groovy'
-apply plugin: 'maven'
+apply plugin: 'maven-publish'
 
 buildscript {
   repositories {
@@ -15,9 +15,9 @@ buildscript {
 apply plugin: "com.gradle.plugin-publish"
 
 dependencies {
-    compile gradleApi()
-    compile localGroovy()
-    compile group: 'com.amazonaws', name: 'aws-java-sdk-s3', version: awsSdkS3Version
+    implementation gradleApi()
+    implementation localGroovy()
+    implementation group: 'com.amazonaws', name: 'aws-java-sdk-s3', version: awsSdkS3Version
 }
 
 repositories {
@@ -43,34 +43,31 @@ task versionFile {
 
 jar.dependsOn versionFile
 
-uploadArchives {
+publishing {
     repositories {
-        mavenDeployer {
-            repository(url: uri('build/repo'))
+        maven {
+            url = uri("${rootProject.projectDir}/maven-repo")
         }
     }
 }
 
-pluginBundle {
-  website = 'https://github.com/mgk/s3-plugin/blob/master/README.md'
-  vcsUrl = 'https://github.com/mgk/s3-plugin'
 
-  description = 'S3 upload and download plugin'
+gradlePlugin {
+  website.set('https://github.com/mgk/s3-plugin/blob/master/README.md')
+  vcsUrl.set('https://github.com/mgk/s3-plugin')
 
   plugins {
-    s3Plugin {
+    create("s3Plugin") {
       id = 'com.github.mgk.gradle.s3'
+      implementationClass = 'com.github.mgk.gradle.S3Plugin'
+      description = 'S3 upload and download plugin'
       displayName = 'Gradle S3 plugin'
-      tags = ['aws', 's3']
+      tags.set(['aws', 's3'])
     }
   }
 }
 
-task wrapper(type: Wrapper) {
-    gradleVersion = project.gradleVersion
-}
-
-task checkExample(type: GradleBuild, dependsOn: uploadArchives) {
+task checkExample(type: GradleBuild) {
     dir = 'example'
     tasks = ['check']
 }
