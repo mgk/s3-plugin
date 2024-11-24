@@ -24,6 +24,11 @@ repositories {
     jcenter()
 }
 
+java {
+    sourceCompatibility = "1.8"
+    targetCompatibility = "1.8"
+}
+
 if (System.env.TRAVIS == 'true') {
     def branch = System.env.TRAVIS_BRANCH.replace('/', '-')
     def isPullRequestBuild = System.env.TRAVIS_PULL_REQUEST != 'false'
